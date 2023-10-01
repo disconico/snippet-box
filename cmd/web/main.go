@@ -20,15 +20,7 @@ func main() {
 	}))
 
 	app := &application{logger: logger}
-
-	mux := http.NewServeMux()
-
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/snippet/view", app.snippetView)
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
+	mux := app.routes()
 
 	logger.Info("starting server on :", slog.String("address", "http://localhost"+*addr))
 
