@@ -20,11 +20,10 @@ func main() {
 	}))
 
 	app := &application{logger: logger}
-	mux := app.routes()
 
 	logger.Info("starting server on :", slog.String("address", "http://localhost"+*addr))
 
-	err := http.ListenAndServe(*addr, mux)
+	err := http.ListenAndServe(*addr, app.routes())
 	logger.Error(err.Error())
 	os.Exit(1)
 }
