@@ -1,21 +1,21 @@
 {{define "base"}}
-<html lang='en'>
-<head>
-    <meta charset='utf-8'>
-    <title>{{template "title" .}} - Snippet-box</title>
-    <link href="/static/css/main.css" rel="stylesheet">
-    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
-</head>
-<body>
-<header>
-    <h1><a href='/'>Snippet-box</a></h1>
-</header>
-{{template "nav" .}}
-<main>
-    {{template "main" .}}
-</main>
-<footer>Powered by <a href='https://golang.org/'>Go</a></footer>
-</body>
+    <html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <title>{{template "title" .}} - Snippet-box</title>
+        <link href="/static/css/main.css" rel="stylesheet">
+        <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+    <header>
+        <h1><a href='/'>Snippet-box</a></h1>
+    </header>
+    {{template "nav" .}}
+    <main>
+        {{template "main" .}}
+    </main>
+    <footer>Powered by <a href='https://golang.org/'>Go</a> in {{.CurrentYear}}</footer>
+    </body>
 
 
-</html> {{end}}
+    </html> {{end}}

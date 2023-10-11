@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"snippetbox.disconico/internal/models"
 	"strconv"
@@ -22,28 +21,14 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/home.tmpl.html",
-	}
-
-	tmpl, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
-
 	for i := range snippets {
 		snippets[i].CreatedInDays = int(time.Now().Sub(snippets[i].Created).Hours() / 24)
 	}
 
-	data := templateData{Snippets: snippets}
+	data := app.newTemplateData()
+	data.Snippets = snippets
 
-	err = tmpl.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, r, err)
-	}
+	app.render(w, r, http.StatusOK, "home.tmpl.html", data)
 }
 
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
@@ -66,26 +51,10 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	snippet.CreatedInDays = int(time.Now().Sub(snippet.Created).Hours() / 24)
 	snippet.ExpiresInDays = int(snippet.Expires.Sub(time.Now()).Hours() / 24)
 
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/view.tmpl.html",
-	}
+	data := app.newTemplateData()
+	data.Snippet = snippet
 
-	tmpl, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
-
-	data := templateData{
-		Snippet: snippet,
-	}
-
-	err = tmpl.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, r, err)
-	}
+	app.render(w, r, http.StatusOK, "view.tmpl.html", data)
 }
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
