@@ -4,21 +4,30 @@
     <form action='/snippet/create' method='POST'>
         <div>
             <label for='title'>Title:</label>
-            <input type='text' name='title' id='title' required>
+            {{with .Form.FieldErrors.title}}
+                <label class='error'>{{.}}</label>
+            {{end}}
+            <input type='text' name='title' id='title' value='{{.Form.Title}}' required>
         </div>
         <div>
             <label for='content'>Content:</label>
-            <textarea name='content' id='content' required></textarea>
+            {{with .Form.FieldErrors.content}}
+                <label class='error'>{{.}}</label>
+            {{end}}
+            <textarea name='content' id='content' required>{{.Form.Content}}</textarea>
         </div>
         <div>
             <label>Delete in:</label>
-            <input type='radio' name='expires' value='365' id='expires365' checked>
+            {{with .Form.FieldErrors.expires}}
+                <label class='error'>{{.}}</label>
+            {{end}}
+            <input type='radio' name='expires' value='365' id='expires365' {{if (eq .Form.Expires 365)}}checked{{end}}>
             <label for='expires365'>One Year</label>
 
-            <input type='radio' name='expires' value='7' id='expires7'>
+            <input type='radio' name='expires' value='7' id='expires7' {{if (eq .Form.Expires 7)}}checked{{end}}>
             <label for='expires7'>One Week</label>
 
-            <input type='radio' name='expires' value='1' id='expires1'>
+            <input type='radio' name='expires' value='1' id='expires1' {{if (eq .Form.Expires 1)}}checked{{end}}>
             <label for='expires1'>One Day</label>
         </div>
         <div>
