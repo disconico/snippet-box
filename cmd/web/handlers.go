@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"snippetbox.disconico/internal/models"
 	"strconv"
+	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +76,36 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	fieldErrors := make(map[string]string)
+
+	if strings.TrimSpace(title) == "" {
+		fieldErrors["title"] = "This field cannot be empty"
+	} else if utf8.RuneCountInString(title) > 100 {
+		fieldErrors["title"] = "Title cannot be more than 100 characters long"
+	}
+
+	if strings.TrimSpace(content) == "" {
+		fieldErrors["content"] = "This field cannot be empty"
+	}
+
+	if expires != 1 && expires != 7 && expires != 365 {
+		fieldErrors["expires"] = "This field must equal 1, 7 or 365"
+	}
+
+	if len(fieldErrors) > 0 {
+		var errMessages []string
+		for field, errMsg := range fieldErrors {
+			errMessages = append(errMessages, fmt.Sprintf("%s: %s", field, errMsg))
+		}
+
+		_, err := fmt.Fprintf(w, "Errors, %s", strings.Join(errMessages, "; "))
+		if err != nil {
+			return
+		}
+
 		return
 	}
 
