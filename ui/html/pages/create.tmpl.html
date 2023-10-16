@@ -7,14 +7,14 @@
             {{with .Form.FieldErrors.title}}
                 <label class='error'>{{.}}</label>
             {{end}}
-            <input type='text' name='title' id='title' value='{{.Form.Title}}' required>
+            <input type='text' name='title' id='title' value='{{.Form.Title}}' >
         </div>
         <div>
             <label for='content'>Content:</label>
             {{with .Form.FieldErrors.content}}
                 <label class='error'>{{.}}</label>
             {{end}}
-            <textarea name='content' id='content' required>{{.Form.Content}}</textarea>
+            <textarea name='content' id='content' >{{.Form.Content}}</textarea>
         </div>
         <div>
             <label>Delete in:</label>
