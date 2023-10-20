@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="snippetbox@localhost" uuid="40ab59bd-245d-434d-a0a4-d1c4ead8b72c">
-      <driver-ref>mysql.8</driver-ref>
+    <data-source source="LOCAL" name="nicolas" uuid="e4244fab-218d-4e0a-b8d4-2a16c84b81a9">
+      <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
-      <remarks>snippet-box</remarks>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/snippetbox</jdbc-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/nicolas</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

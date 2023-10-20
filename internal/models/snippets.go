@@ -1,8 +1,11 @@
 package models
 
 import (
-	"database/sql"
+	"context"
 	"errors"
+	"fmt"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
 )
 
@@ -17,42 +20,37 @@ type Snippet struct {
 }
 
 type SnippetModel struct {
-	DB *sql.DB
+	DB *pgxpool.Pool
 }
 
 func (m *SnippetModel) Insert(title string, content string, expires int) (int, error) {
-	stmt := `INSERT INTO snippets(title, content, created, expires)
-		VALUES (?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
+	stmt := `INSERT INTO snippets(TITLE, CONTENT, CREATED, EXPIRES) 
+	VALUES ($1, $2, NOW(), NOW() + $3::INTERVAL) 
+    RETURNING id`
 
-	result, err := m.DB.Exec(stmt, title, content, expires)
+	interval := fmt.Sprintf("%d days", expires)
+
+	var id int
+	err := m.DB.QueryRow(context.Background(), stmt, title, content, interval).Scan(&id)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, nil
-	}
-
-	return int(id), nil
+	return id, nil
 }
 
-func (m *SnippetModel) Get(id int) (Snippet, error) {
+func (m *SnippetModel) Get(id int) (*Snippet, error) {
 	stmt := `SELECT id, title, content, created, expires FROM snippets 
-		WHERE expires > UTC_TIMESTAMP AND id = ?`
+		WHERE expires > NOW() AND id = $1`
 
-	row := m.DB.QueryRow(stmt, id)
+	s := &Snippet{}
 
-	var s Snippet
-
-	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	err := m.DB.QueryRow(context.Background(), stmt, id).Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 	if err != nil {
-
-		if errors.Is(err, sql.ErrNoRows) {
-			return Snippet{}, ErrNoRecord
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNoRecord
 		}
-
-		return Snippet{}, err
+		return nil, err
 	}
 
 	return s, nil
@@ -60,18 +58,16 @@ func (m *SnippetModel) Get(id int) (Snippet, error) {
 
 func (m *SnippetModel) Latest() ([]Snippet, error) {
 	stmt := `SELECT id, title, content, created, expires FROM snippets 
-			where expires > UTC_TIMESTAMP 
-			limit 10`
+			WHERE expires > NOW()
+			LIMIT 10`
 
-	rows, err := m.DB.Query(stmt)
+	rows, err := m.DB.Query(context.Background(), stmt)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer func(rows *sql.Rows) {
-		_ = rows.Close()
-	}(rows)
+	defer rows.Close()
 
 	var snippets []Snippet
 
