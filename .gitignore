@@ -1,2 +1,4 @@
 /tls/cert.pem
 /tls/key.pem
+
+dns.json
