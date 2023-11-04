@@ -85,7 +85,7 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
-	logger.Info("starting server on :", slog.String("address", "http://localhost"+srv.Addr))
+	logger.Info("starting server on :", slog.String("address", "https://localhost"+srv.Addr))
 
 	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	logger.Error(err.Error())

@@ -187,7 +187,9 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, err := app.users.Authenticate(form.Email, form.Password)
-	app.logger.Info("user logging in", "user id:", id)
+	if id != 0 {
+		app.logger.Info("user logging in", "user id:", id)
+	}
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidCredentials) {
 			form.AddNonFieldError("Email or password is incorrect")
