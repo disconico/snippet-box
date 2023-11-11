@@ -225,3 +225,10 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+func ping(w http.ResponseWriter, _ *http.Request) {
+	_, err := w.Write([]byte("OK"))
+	if err != nil {
+		return
+	}
+}
