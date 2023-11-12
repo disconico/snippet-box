@@ -126,3 +126,14 @@ func (ts *testServer) postForm(t *testing.T, urlPath string, form url.Values) (i
 	// Return the response status, headers and body.
 	return rs.StatusCode, rs.Header, string(body)
 }
+
+func (ts *testServer) authenticateTestUser(t *testing.T) {
+	_, _, body := ts.get(t, "/user/login")
+	csrfToken := extractCSRFToken(t, body)
+
+	f := url.Values{}
+	f.Add("email", "alice@example.com")
+	f.Add("password", "pa$$word")
+	f.Add("csrf_token", csrfToken)
+	ts.postForm(t, "/user/login", f)
+}
