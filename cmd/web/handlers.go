@@ -238,3 +238,7 @@ func ping(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 }
+
+func (app *application) trigger500(_ http.ResponseWriter, _ *http.Request) {
+	panic("Intentional 500 error for debug testing")
+}
