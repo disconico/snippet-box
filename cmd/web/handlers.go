@@ -121,6 +121,7 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 	data.Form = userSignupForm{}
 	app.render(w, r, http.StatusOK, "signup.tmpl.html", data)
 }
+
 func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	var form userSignupForm
 
@@ -218,6 +219,24 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
 }
+
+func (app *application) accountView(w http.ResponseWriter, r *http.Request) {
+	userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	user, err := app.users.Get(userID)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		}
+		app.serverError(w, r, err)
+	}
+
+	data := app.newTemplateData(r)
+	data.User = *user
+
+	app.render(w, r, http.StatusOK, "account.tmpl.html", data)
+}
+
 func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	err := app.sessionManager.RenewToken(r.Context())
 	if err != nil {
